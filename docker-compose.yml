@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  database:
+    container_name: database
+    image: postgres:12.8
+    restart: always
+    environment:
+      - POSTGRES_USER=sharauq
+      - POSTGRES_PASSWORD=sharauq
+      - POSTGRES_DB=apprentice
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+  app:
+        container_name: app
+        restart: always
+        build: .
+        ports:
+            - 4000:4000
+        depends_on: 
+            - database
+
+volumes:
+  db:
