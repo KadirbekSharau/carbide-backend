@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/KadirbekSharau/carbide-backend/src/controllers"
 	"github.com/KadirbekSharau/carbide-backend/src/models"
-	"github.com/KadirbekSharau/carbide-backend/src/services/auth"
+	"github.com/KadirbekSharau/carbide-backend/src/services"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

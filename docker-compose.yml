@@ -1,6 +1,16 @@
 version: "3.8"
 
 services:
+  app:
+        container_name: app
+        restart: always
+        build: .
+        env_file:
+          - .env
+        ports:
+            - 8080:4000
+        depends_on: 
+            - database
   database:
     container_name: database
     image: postgres:12.8
@@ -13,14 +23,6 @@ services:
       - 5432:5432
     volumes:
       - db:/var/lib/postgresql/data
-  app:
-        container_name: app
-        restart: always
-        build: .
-        ports:
-            - 4000:4000
-        depends_on: 
-            - database
 
 volumes:
   db:

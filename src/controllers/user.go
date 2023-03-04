@@ -4,14 +4,15 @@ import (
 	"net/http"
 
 	"github.com/KadirbekSharau/carbide-backend/src/dto"
-	"github.com/KadirbekSharau/carbide-backend/src/services/auth"
+	"github.com/KadirbekSharau/carbide-backend/src/services"
 	"github.com/KadirbekSharau/carbide-backend/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-var roles = map[string]int{"seeker": 1, "employer": 2, "admin": 0} 
-const expTime = 24*60*1
+var roles = map[string]int{"seeker": 1, "employer": 2, "admin": 0}
+
+const expTime = 24 * 60 * 1
 
 var AuthConfig = util.ErrorConfig{
 	Options: map[string]util.ErrorMetaConfig{
@@ -39,10 +40,10 @@ type UserController interface {
 }
 
 type userController struct {
-	service services.UserService
+	service *services.UserService
 }
 
-func NewUserController(service services.UserService) UserController {
+func NewUserController(service *services.UserService) UserController {
 	return &userController{service: service}
 }
 
@@ -66,7 +67,7 @@ func (h *userController) UserLogin(ctx *gin.Context) {
 
 /*  User Register Handler */
 func (h *userController) UserRegister(ctx *gin.Context) {
-	var input dto.InputUserSeekerRegister
+	var input dto.InputUserRegister
 	ctx.ShouldBindJSON(&input)
 	if errResponse, errCount := util.GoValidator(&input, AuthConfig.Options); errCount > 0 {
 		util.ValidatorErrorResponse(ctx, http.StatusBadRequest, http.MethodPost, errResponse)
@@ -90,4 +91,4 @@ func (h *userController) createToken(token map[string]interface{}, ctx *gin.Cont
 		return
 	}
 	util.APIResponse(ctx, message, http.StatusCreated, http.MethodPost, map[string]string{"accessToken": accessToken})
-} 
+}

@@ -19,11 +19,11 @@ func (s *UserService) UserLogin(input *dto.InputLogin) (*model.Users, int, strin
 }
 
 /* User Registration Service */
-func (s *UserService) UserRegister(input *dto.InputUserSeekerRegister) (*model.Users, int, string) {
-	return s.repo.UserRegister(input)
+func (s *UserService) UserRegister(input *dto.InputUserRegister) (*model.Users, int, string) {
+	return s.repo.UserRegister("User", input)
 }
 
 /* Admin User Registration Service */
-func (s *UserService) AdminRegister(input *dto.InputUserSeekerRegister) (*model.Users, int, string) {
-	return s.repo.AdminRegister(input)
+func (s *UserService) AdminRegister(input *dto.InputUserRegister) (*model.Users, int, string) {
+	return s.repo.UserRegister("Admin", input)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 func NewDatabaseConnection() *gorm.DB {
-	//dbURL := "postgres://sharauq:sharauq@database:5432/apprentice"
+	//dbURL := "postgres://sharauq:sharauq@database:5432/carbide"
 	dbURL := "host=localhost user=kadirbeksharau password=kadr2001 dbname=kadirbeksharau port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 	if err != nil {
@@ -19,6 +19,7 @@ func NewDatabaseConnection() *gorm.DB {
 
 	err = db.AutoMigrate(
 		&models.Users{},
+		&models.Document{},
 	)
 
 	if err != nil {

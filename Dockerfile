@@ -1,29 +1,33 @@
-# Start from the latest golang base image.
-FROM golang:latest
+# ======================
+#  GO FIRST STAGE
+# ======================
 
-# Add maintainer information
-LABEL maintainer="sharaukadr2001@gmail.com"
-
-# Set the current working directory inside an image.
-WORKDIR /app
-
-# Copy Go module dependency requirements file.
-COPY go.mod .
-
-# Copy Go Modules expected hashes file.
-COPY go.sum .
-
-# Download dependencies.
+FROM golang:latest as builder
+USER ${USER}
+WORKDIR /usr/src/carbide-backend
+COPY go.mod \
+  go.sum ./
 RUN go mod download
+COPY . ./
+ENV GO111MODULE="on" \
+  GOARCH="amd64" \
+  GOOS="linux" \
+  CGO_ENABLED="0"
+RUN apt-get clean \
+  && apt-get remove
 
-# Copy all sources.
-COPY . .
+# ======================
+#  GO FINAL STAGE
+# ======================
 
-# Build the application.
-RUN go build -o /apprentice
-
-# Delete source files.
-RUN find . -name "*.go" -type f -delete
-
-# Run the application.
-CMD ["/apprentice"]
+FROM builder
+WORKDIR /usr/src/carbide-backend
+RUN apt-get update \
+  && apt-get install -y \
+  make \
+  vim \
+  build-essential
+COPY --from=builder . ./usr/src/carbide-backend
+RUN make goprod
+EXPOSE 4000
+CMD ["./main"]

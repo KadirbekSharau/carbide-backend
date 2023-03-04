@@ -5,60 +5,31 @@ import (
 )
 
 type Document struct {
-    gorm.Model
-    UserID                  uint   `gorm:"not null"`
-    Filename                string `gorm:"not null"`
-    EncryptedData           []byte `gorm:"not null"`
-    BlockchainTransactionID string `gorm:"not null"`
+	gorm.Model
+	UserID                  uint   `gorm:"not null"`
+	FileName                string `gorm:"not null"`
+	URL                     string `gorm:"not null"`
+	BlockchainTransactionID string `gorm:"not null"`
 }
 
 type DocumentRepository struct {
-    db *gorm.DB
+	db *gorm.DB
 }
 
 func NewDocumentRepository(db *gorm.DB) *DocumentRepository {
-    return &DocumentRepository{db: db}
+	return &DocumentRepository{db: db}
 }
 
-func (r *DocumentRepository) GetAllDocumentsForUser(userID uint) ([]Document, error) {
-    var docs []Document
-    result := r.db.Where("user_id = ?", userID).Find(&docs)
-    if result.Error != nil {
-        return nil, result.Error
-    }
-    return docs, nil
+func (r *DocumentRepository) CreateDocument(document *Document) error {
+	return r.db.Create(document).Error
 }
 
-func (r *DocumentRepository) GetDocumentByIDForUser(id uint, userID uint) (*Document, error) {
-    var doc Document
-    result := r.db.Where("id = ? and user_id = ?", id, userID).First(&doc)
-    if result.Error != nil {
-        return nil, result.Error
-    }
-    return &doc, nil
-}
-
-func (r *DocumentRepository) CreateDocumentForUser(userID uint, doc *Document) error {
-    doc.UserID = userID
-    result := r.db.Create(&doc)
-    if result.Error != nil {
-        return result.Error
-    }
-    return nil
-}
-
-func (r *DocumentRepository) UpdateDocumentForUser(userID uint, doc *Document) error {
-    result := r.db.Model(&doc).Where("user_id = ?", userID).Updates(&doc)
-    if result.Error != nil {
-        return result.Error
-    }
-    return nil
-}
-
-func (r *DocumentRepository) DeleteDocumentByIDForUser(id uint, userID uint) error {
-    result := r.db.Where("id = ? and user_id = ?", id, userID).Delete(&Document{})
-    if result.Error != nil {
-        return result.Error
-    }
-    return nil
+func (r *DocumentRepository) GetUrlByUserIdAndId(userId uint64, id string) (string, error) {
+	var url string
+	if err := r.db.Table("documents").
+		Where("user_id = ? AND id = ?", userId, id).
+		Pluck("url", &url).Error; err != nil {
+		return "", err
+	}
+	return url, nil
 }
